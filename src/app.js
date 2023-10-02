@@ -65,6 +65,15 @@ app.post("/participants", async (req, res) => {
 
 })
 
+app.get("/participants", async (req, res) => {
+    try {
+        const participantes = await db.collection("participants").find().toArray()
+        res.send(participantes)
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+})
+
 
 // Escutando requisições
 const PORT = 5000;
