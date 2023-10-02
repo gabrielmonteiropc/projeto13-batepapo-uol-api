@@ -117,6 +117,23 @@ app.post("/messages", async (req, res) => {
     }
 })
 
+app.get("/messages", async (req, res) => {
+
+    const { user } = req.headers
+
+    try {
+        const messages = await db.collection("messages")
+            .find({ $or: [{ from: user }, { to: user }, { to: "Todos" }, { type: "message" }] })
+            .toArray()
+
+        res.send(messages)
+
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+
+})
+
 // Escutando requisições
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
