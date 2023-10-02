@@ -121,9 +121,19 @@ app.get("/messages", async (req, res) => {
 
     const { user } = req.headers
 
+    const { limit } = req.query
+
+    const numeroLimite = Number(limit)
+
+    if (limit !== undefined && (numeroLimite <= 0 || isNaN(numeroLimite))) {
+        return res.status(422).send("Insira um limite que seja válido")
+    }
+
     try {
         const messages = await db.collection("messages")
             .find({ $or: [{ from: user }, { to: user }, { to: "Todos" }, { type: "message" }] })
+            .sort({ time: -1 })
+            .limit(limit === undefined ? 0 : numeroLimite)
             .toArray()
 
         res.send(messages)
