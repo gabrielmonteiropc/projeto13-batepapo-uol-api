@@ -144,6 +144,29 @@ app.get("/messages", async (req, res) => {
 
 })
 
+app.post("/status"), async (req, res) => {
+
+    const { user } = req.headers
+
+    if (!user) return res.status(404).send("Informe um usuário")
+
+    try {
+
+        const participante = await db.collection("participants").findOne({ name: user })
+
+        if (!participante) return res.status(404).send("Informe um usuário válido")
+
+        await db.collection("participants").updateOne(
+            { name: user }, { $set: { lastStatus: Date.now() } }
+        )
+
+        res.sendStatus(200)
+
+    } catch (err) {
+        res.status(500).send(err.message)
+    }
+}
+
 // Escutando requisições
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
